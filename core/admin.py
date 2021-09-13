@@ -19,19 +19,18 @@ class PersonAdminForm(forms.ModelForm):
 
         return self.cleaned_data["first_name"]
 
-
 @admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
     list_display = ("last_name", "first_name", "show_average")
     search_fields = ("last_name", "first_name", )
     fields = ("first_name", "last_name", "courses")
-    form = PersonAdminForm 
+    form = PersonAdminForm
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields["first_name"].label = "First Name (Humans Only!):"
         return form
-
+    
     def show_average(self, obj):
         result = Grade.objects.filter(person=obj).aggregate(Avg("grade"))
         return format_html("<b><i>{}</i></b>", result["grade__avg"])
@@ -54,6 +53,8 @@ class CourseAdmin(admin.ModelAdmin):
 
         return format_html('<a href="{}">{} Students</a>', url, count)
 
+
 @admin.register(Grade)
 class GradeAdmin(admin.ModelAdmin):
     list_filter = ("course__year", )
+
